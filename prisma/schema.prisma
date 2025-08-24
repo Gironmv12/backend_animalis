@@ -1,0 +1,195 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ====================
+// Enums
+// ====================
+
+enum Rol {
+  administrador
+  asistente
+  veterinario
+}
+
+enum EstadoUsuario {
+  A
+  I
+}
+
+enum GeneroMascota {
+  macho
+  hembra
+}
+
+enum EstadoMascota {
+  saludable
+  en_tratamiento
+  vacunacion
+}
+
+enum EstadoVacuna {
+  completo
+  progreso
+  programado
+}
+
+enum Urgencia {
+  baja
+  normal
+  alta
+}
+
+enum TipoRegistro {
+  vacuna
+  tratamiento
+  cirugia
+  consulta
+}
+
+enum EstadoCita {
+  pendiente
+  completada
+  cancelada
+}
+
+// ====================
+// Models
+// ====================
+
+model Cita {
+  idCita        Int         @id @default(autoincrement()) @map("id_cita")
+  mascotaId     Int?        @map("mascota_id")
+  propietarioId Int?        @map("propietario_id")
+  veterinarioId Int?        @map("veterinario_id")
+  fecha         DateTime    @db.Timestamp(6)
+  motivo        String?
+  estado        EstadoCita?
+
+  mascota     Mascota?     @relation(fields: [mascotaId], references: [idMascota], onDelete: NoAction, onUpdate: NoAction)
+  propietario Propietario? @relation(fields: [propietarioId], references: [idPropietario], onDelete: NoAction, onUpdate: NoAction)
+  usuario     Usuario?     @relation(fields: [veterinarioId], references: [idUsuario], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("cita")
+}
+
+model HistorialMedico {
+  idHistorial     Int           @id @default(autoincrement()) @map("id_historial")
+  mascotaId       Int?          @map("mascota_id")
+  tipoRegistro    TipoRegistro? @map("tipo_registro")
+  titulo          String?       @db.VarChar(150)
+  descripcion     String?
+  fechaAplicacion DateTime      @map("fecha_aplicacion") @db.Date
+  proximaFecha    DateTime?     @map("proxima_fecha") @db.Date
+  estado          EstadoVacuna?
+  urgencia        Urgencia?
+  peso            Decimal?      @db.Decimal(5, 2)
+  temperatura     Decimal?      @db.Decimal(4, 1)
+  medicamentos    String?
+  notas           String?
+  veterinarioId   Int?          @map("veterinario_id")
+
+  mascota Mascota? @relation(fields: [mascotaId], references: [idMascota], onDelete: Cascade, onUpdate: NoAction)
+  usuario Usuario? @relation(fields: [veterinarioId], references: [idUsuario], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("historial_medico")
+}
+
+model Mascota {
+  idMascota         Int            @id @default(autoincrement()) @map("id_mascota")
+  nombre            String         @db.VarChar(100)
+  especie           String?        @db.VarChar(50)
+  raza              String?        @db.VarChar(100)
+  edad              Int?
+  genero            GeneroMascota?
+  peso              Decimal?       @db.Decimal(5, 2)
+  color             String?        @db.VarChar(50)
+  fechaNacimiento   DateTime?      @map("fecha_nacimiento") @db.Date
+  microchip         String?        @unique @db.VarChar(50)
+  estado            EstadoMascota?
+  notas             String?
+  propietarioId     Int?           @map("propietario_id")
+  fechaUltimaVisita DateTime?      @map("fecha_ultima_visita") @db.Date
+  foto              String?
+
+  citas          Cita[]
+  historiales    HistorialMedico[]
+  propietario    Propietario?      @relation(fields: [propietarioId], references: [idPropietario], onDelete: Cascade, onUpdate: NoAction)
+  mascotaVacunas MascotaVacuna[]
+
+  @@map("mascota")
+}
+
+model MascotaVacuna {
+  idMascota       Int           @map("id_mascota")
+  idVacuna        Int           @map("id_vacuna")
+  fechaAplicacion DateTime      @map("fecha_aplicacion") @db.Date
+  proximaFecha    DateTime?     @map("proxima_fecha") @db.Date
+  estado          EstadoVacuna?
+  urgencia        Urgencia?
+  veterinarioId   Int?          @map("veterinario_id")
+  notas           String?
+
+  mascota Mascota  @relation(fields: [idMascota], references: [idMascota], onDelete: Cascade, onUpdate: NoAction)
+  vacuna  Vacuna   @relation(fields: [idVacuna], references: [idVacuna], onDelete: Cascade, onUpdate: NoAction)
+  usuario Usuario? @relation(fields: [veterinarioId], references: [idUsuario], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([idMascota, idVacuna, fechaAplicacion])
+  @@map("mascota_vacuna")
+}
+
+model Propietario {
+  idPropietario     Int            @id @default(autoincrement()) @map("id_propietario")
+  nombre            String         @db.VarChar(100)
+  apellidos         String?        @db.VarChar(100)
+  correo            String?        @unique @db.VarChar(120)
+  telefono          String?        @db.VarChar(20)
+  direccion         String?
+  estado            EstadoUsuario? @default(A)
+  notas             String?
+  fechaUltimaVisita DateTime?      @map("fecha_ultima_visita") @db.Date
+
+  citas    Cita[]
+  mascotas Mascota[]
+
+  @@map("propietario")
+}
+
+model Usuario {
+  idUsuario     Int            @id @default(autoincrement()) @map("id_usuario")
+  nombre        String         @db.VarChar(100)
+  apellidos     String?        @db.VarChar(100)
+  correo        String         @unique @db.VarChar(120)
+  contrasena    String
+  rol           Rol?
+  estado        EstadoUsuario? @default(A)
+  fechaCreacion DateTime?      @default(now()) @map("fecha_creacion") @db.Timestamp(6)
+
+  citas          Cita[]
+  historiales    HistorialMedico[]
+  mascotaVacunas MascotaVacuna[]
+
+  @@map("usuario")
+}
+
+model Vacuna {
+  idVacuna    Int     @id @default(autoincrement()) @map("id_vacuna")
+  nombre      String  @db.VarChar(100)
+  descripcion String?
+
+  mascotaVacunas MascotaVacuna[]
+
+  @@map("vacuna")
+}
