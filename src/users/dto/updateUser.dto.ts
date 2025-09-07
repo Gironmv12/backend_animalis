@@ -6,7 +6,7 @@ import {
   MaxLength,
   IsEnum,
 } from 'class-validator';
-import { Rol, EstadoUsuario } from '@prisma';
+import { Rol, EstadoUsuario } from '@prisma/client';
 
 export class UpdateUserDto {
   @IsString()

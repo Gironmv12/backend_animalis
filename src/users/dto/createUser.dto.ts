@@ -5,7 +5,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-import { Rol, EstadoUsuario } from '@prisma';
+import { Rol, EstadoUsuario } from '@prisma/client';
 
 export class CreateUserDto {
   @IsString()

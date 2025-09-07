@@ -6,7 +6,7 @@ import {
   IsEnum,
   IsDateString,
 } from 'class-validator';
-import { EstadoUsuario } from '@prisma';
+import { EstadoUsuario } from '@prisma/client';
 
 export class CreatePropietarioDto {
   @IsString()

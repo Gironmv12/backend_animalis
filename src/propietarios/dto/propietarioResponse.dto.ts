@@ -1,4 +1,4 @@
-import { EstadoUsuario } from '@prisma';
+import { EstadoUsuario } from '@prisma/client';
 
 export class PropietarioResponseDto {
   id: string;
