@@ -47,4 +47,9 @@ export class PropietariosController {
   async findMascotas(@Param('id') id: string) {
     return this.propietariosService.findMascotasByPropietario(+id);
   }
+
+  @Get(':id/detalle')
+  async findDetalle(@Param('id') id: string) {
+    return this.propietariosService.findDetalleById(+id);
+  }
 }

@@ -4,6 +4,7 @@ import { CreatePropietarioDto } from './dto/createPropietario.dto';
 import { UpdatePropietarioDto } from './dto/updatePropietario.dto';
 import { PropietarioResponseDto } from './dto/propietarioResponse.dto';
 import { PropietarioMascotaResponseDto } from './propietarioMascotaResponse.dto';
+import { PropietarioDetalleResponseDto } from './dto/PropietarioDetalleResponse.dto';
 @Injectable()
 export class PropietariosService {
   constructor(private prisma: PrismaService) {}
@@ -102,6 +103,17 @@ export class PropietariosService {
       estado: prop.estado,
       notas: prop.notas,
       fechaUltimaVisita: prop.fechaUltimaVisita,
+    };
+  }
+
+  //encontrar propietario con sus mascotas
+
+  async findDetalleById(id: number): Promise<PropietarioDetalleResponseDto> {
+    const propietario = await this.findOne(id);
+    const mascotas = await this.findMascotasByPropietario(id);
+    return {
+      propietario,
+      mascotas,
     };
   }
 }
