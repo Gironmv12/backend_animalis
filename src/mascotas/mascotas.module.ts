@@ -5,7 +5,7 @@ import { MascotasFilesService } from './mascotas-files.service';
 import { MongooseModule } from '@nestjs/mongoose';
 
 const mongoUrl =
-  process.env.NODE_ENV === 'desarrollo'
+  process.env.NODE_ENV === 'produccion'
     ? process.env.MONGO_CONEXION_PRODUCCION
     : process.env.MONGO_URL;
 
