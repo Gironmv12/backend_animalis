@@ -13,9 +13,11 @@ export class MascotaResponseDto {
   nombre: string;
   especie: string;
   raza: string;
+  edad?: number;
   genero: GeneroMascota;
   fechaNacimiento?: Date;
   propietarioId: number;
+  propietarioNombre?: string;
   estado?: EstadoMascota;
   color?: string;
   microchip?: string;

@@ -15,7 +15,7 @@ export class MascotasService {
   // Listar todas las mascotas
   async findAll(): Promise<MascotaResponseDto[]> {
     const mascotas = await this.prisma.mascota.findMany();
-    return mascotas.map((m) => this.toMascotaResponse(m));
+    return await Promise.all(mascotas.map((m) => this.toMascotaResponse(m)));
   }
 
   // Obtener una mascota por su ID
@@ -61,23 +61,28 @@ export class MascotasService {
     return this.mascotasFilesService.getFileStream(fileId);
   }
 
-  private toMascotaResponse(mascota: any): MascotaResponseDto {
+  private async toMascotaResponse(mascota: any): Promise<MascotaResponseDto> {
+    const propietario = await this.prisma.propietario.findUnique({
+      where: { idPropietario: mascota.propietarioId },
+      select: { nombre: true },
+    });
+
     return {
       idMascota: mascota.idMascota,
       nombre: mascota.nombre,
-      especie: mascota.especie ?? '',
-      raza: mascota.raza ?? '',
-      genero: mascota.genero,
-      fechaNacimiento: mascota.fechaNacimiento,
-      propietarioId: mascota.propietarioId,
-      estado: mascota.estado,
-      color: mascota.color,
-      microchip: mascota.microchip,
-      peso: typeof mascota.peso === 'number' ? mascota.peso : undefined,
-      notas: mascota.notas,
-      foto: mascota.foto,
-      createdAt: mascota.createdAt,
-      updatedAt: mascota.updatedAt,
+      especie: mascota.especie ?? null,
+      raza: mascota.raza ?? null,
+      edad: mascota.edad ?? null,
+      genero: mascota.genero ?? null,
+      fechaNacimiento: mascota.fechaNacimiento ?? null,
+      propietarioId: mascota.propietarioId ?? null,
+      propietarioNombre: propietario?.nombre ?? undefined,
+      estado: mascota.estado ?? null,
+      color: mascota.color ?? null,
+      microchip: mascota.microchip ?? null,
+      peso: mascota.peso ?? null,
+      notas: mascota.notas ?? null,
+      foto: mascota.foto ?? null,
     };
   }
 }
