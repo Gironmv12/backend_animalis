@@ -11,12 +11,14 @@ import { LoginUserDto } from './dto/loginUser.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UserLoginResponseDto } from './dto/user-response.dto';
 import { JwtService } from '@nestjs/jwt';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private prisma: PrismaService,
-    private jwt: JwtService
+    private jwt: JwtService,
+    private notifications: NotificationsService
   ) {}
 
   async findAll(): Promise<UserResponseDto[]> {
@@ -47,6 +49,19 @@ export class UsersService {
         estado: dto.estado ?? 'A',
       },
     });
+
+    // Notificar a n8n (no bloqueante)
+    this.notifications.notify(
+      'user.created',
+      {
+        id: user.idUsuario,
+        nombre: user.nombre,
+        correo: user.correo,
+        rol: user.rol,
+      },
+      'N8N_WEBHOOK_URL_USER_CREATED'
+    );
+
     return this.toUserResponse(user);
   }
 

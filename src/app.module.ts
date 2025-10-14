@@ -7,6 +7,8 @@ import { UsersModule } from './users/users.module';
 import { PropietariosModule } from './propietarios/propietarios.module';
 import { MascotasModule } from './mascotas/mascotas.module';
 import { MascostasController } from './mascotas/mascotas.controller';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ExpedientesModule } from './expedientes/expedientes.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { MascostasController } from './mascotas/mascotas.controller';
     UsersModule,
     PropietariosModule,
     MascotasModule,
+    NotificationsModule,
+    ExpedientesModule,
   ],
   controllers: [AppController, MascostasController],
   providers: [AppService],
