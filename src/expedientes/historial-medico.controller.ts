@@ -21,6 +21,11 @@ export class HistorialMedicoController {
     return this.expedientesService.findByMascota(mascotaId);
   }
 
+  @Get()
+  async findAll() {
+    return this.expedientesService.findAll();
+  }
+
   @Post()
   async create(@Body() dto: CreateHistorialDto) {
     return this.expedientesService.create(dto);

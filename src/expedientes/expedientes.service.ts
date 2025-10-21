@@ -14,6 +14,12 @@ export class ExpedientesService {
     });
   }
 
+  async findAll() {
+    return this.prisma.historialMedico.findMany({
+      orderBy: { fechaAplicacion: 'desc' },
+    });
+  }
+
   async create(data: CreateHistorialDto) {
     const payload: any = {
       mascotaId: data.mascotaId,
