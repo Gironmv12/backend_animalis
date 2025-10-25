@@ -9,6 +9,9 @@ import { MascotasModule } from './mascotas/mascotas.module';
 import { MascostasController } from './mascotas/mascotas.controller';
 import { NotificationsModule } from './notifications/notifications.module';
 import { ExpedientesModule } from './expedientes/expedientes.module';
+import { ReportesController } from './reportes/reportes.controller';
+import { ReportesService } from './reportes/reportes.service';
+import { ReportesModule } from './reportes/reportes.module';
 
 @Module({
   imports: [
@@ -19,8 +22,9 @@ import { ExpedientesModule } from './expedientes/expedientes.module';
     MascotasModule,
     NotificationsModule,
     ExpedientesModule,
+    ReportesModule,
   ],
-  controllers: [AppController, MascostasController],
-  providers: [AppService],
+  controllers: [AppController, MascostasController, ReportesController],
+  providers: [AppService, ReportesService],
 })
 export class AppModule {}
